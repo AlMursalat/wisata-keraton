@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../css/style.css";
-import { getWisata, tambahWisata, updateWisata, deleteWisata } from "../../api";
-import { getLawa, tambahLawa, updateLawa, deleteLawa } from "../../api";
-import { getBaluara, tambahBaluara, updateBaluara, deleteBaluara } from "../../api";
+import { 
+    getWisata, tambahWisata, updateWisata, deleteWisata, 
+    getLawa, tambahLawa, updateLawa, deleteLawa, 
+    getBaluara, tambahBaluara, updateBaluara, deleteBaluara, 
+    getSliders, tambahSlider, updateSlider, deleteSlider 
+} from "../../api";
 
 const AdminDashboard = () => {
     const navigate = useNavigate();
@@ -24,9 +27,8 @@ const AdminDashboard = () => {
 
     useEffect(() => {
         fetchData();
-    }, [activeMenu]);
+    }, [activeMenu, currentPage]);
 
-    // 🔹 Fungsi Menghilangkan Alert Setelah 5 Detik
     useEffect(() => {
         if (alertMessage) {
             const timer = setTimeout(() => setAlertMessage(null), 5000);
@@ -46,6 +48,9 @@ const AdminDashboard = () => {
                     break;
                 case "Manajemen Baluara":
                     data = await getBaluara();
+                    break;
+                case "Manajemen Slider":
+                    data = await getSliders();
                     break;
                 default:
                     data = [];
@@ -93,6 +98,9 @@ const AdminDashboard = () => {
             case "Manajemen Baluara":
                 await tambahBaluara(formData);
                 break;
+            case "Manajemen Slider":
+                await tambahSlider(formData);
+                break;
         }
     };
 
@@ -106,6 +114,9 @@ const AdminDashboard = () => {
                 break;
             case "Manajemen Baluara":
                 await updateBaluara(formData.id, formData);
+                break;
+            case "Manajemen Slider":
+                await updateSlider(formData.id, formData);
                 break;
         }
     };
@@ -128,6 +139,9 @@ const AdminDashboard = () => {
                 case "Manajemen Baluara":
                     await deleteBaluara(id);
                     break;
+                case "Manajemen Slider":
+                    await deleteSlider(id);
+                    break;
             }
             setAlertMessage({ type: "success", text: "Data berhasil dihapus!" });
             fetchData();
@@ -141,7 +155,7 @@ const AdminDashboard = () => {
         setIsEditMode(false);
     };
 
-    // 🔹 Pagination
+    // Pagination
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = dataList.slice(indexOfFirstItem, indexOfLastItem);
@@ -156,29 +170,25 @@ const AdminDashboard = () => {
                     <li className={activeMenu === "Manajemen Wisata" ? "active" : ""} onClick={() => setActiveMenu("Manajemen Wisata")}>Manajemen Wisata</li>
                     <li className={activeMenu === "Manajemen Lawa" ? "active" : ""} onClick={() => setActiveMenu("Manajemen Lawa")}>Manajemen Lawa</li>
                     <li className={activeMenu === "Manajemen Baluara" ? "active" : ""} onClick={() => setActiveMenu("Manajemen Baluara")}>Manajemen Baluara</li>
+                    <li className={activeMenu === "Manajemen Slider" ? "active" : ""} onClick={() => setActiveMenu("Manajemen Slider")}>Manajemen Slider</li>
                 </ul>
                 <button className="btn-logout" onClick={handleLogout}>Logout</button>
             </div>
 
             <div className="admin-content">
                 <h3>{activeMenu}</h3>
-                {alertMessage && (
-                    <div className={`alert ${alertMessage.type === "success" ? "alert-success" : "alert-error"}`}>
-                        {alertMessage.text}
-                    </div>
-                )}
 
                 <div className="admin-grid">
                     <div className="admin-form">
+                        <h4>{isEditMode ? "Edit" : "Tambah"} {activeMenu}</h4>
                         <form className="form-admin" onSubmit={handleSubmit}>
-                            <input type="text" name="nama" placeholder="Nama" value={formData.nama} onChange={handleInputChange} required />
-                            <textarea name="deskripsi_id" placeholder="Deskripsi (ID)" value={formData.deskripsi_id} onChange={handleInputChange} required />
-                            <textarea name="deskripsi_en" placeholder="Deskripsi (EN)" value={formData.deskripsi_en} onChange={handleInputChange} required />
-                            <input type="text" name="longitude" placeholder="Longitude" value={formData.longitude} onChange={handleInputChange} required />
-                            <input type="text" name="latitude" placeholder="Latitude" value={formData.latitude} onChange={handleInputChange} required />
-                            <input type="text" name="gambar" placeholder="Nama File Gambar" value={formData.gambar} onChange={handleInputChange} required />
-                            <button type="submit" className="btn-tambah">{isEditMode ? "Update" : "Tambah"}</button>
-                            {isEditMode && <button type="button" onClick={resetForm} className="btn-cancel">Batal</button>}
+                            <input type="text" name="nama" value={formData.nama} onChange={handleInputChange} required placeholder="Nama" />
+                            <textarea name="deskripsi_id" value={formData.deskripsi_id} onChange={handleInputChange} required placeholder="Deskripsi (ID)" />
+                            <textarea name="deskripsi_en" value={formData.deskripsi_en} onChange={handleInputChange} required placeholder="Deskripsi (EN)" />
+                            <input type="text" name="latitude" value={formData.latitude} onChange={handleInputChange} required placeholder="Latitude" />
+                            <input type="text" name="longitude" value={formData.longitude} onChange={handleInputChange} required placeholder="Longitude" />
+                            <input type="text" name="gambar" value={formData.gambar} onChange={handleInputChange} required placeholder="Nama File Gambar" />
+                            <button type="submit">{isEditMode ? "Update" : "Tambah"}</button>
                         </form>
                     </div>
 
@@ -188,30 +198,25 @@ const AdminDashboard = () => {
                                 <tr>
                                     <th>No</th>
                                     <th>Nama</th>
+                                    <th>Latitude</th>
+                                    <th>Longitude</th>
+                                    <th>Gambar</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {currentItems.map((item, index) => (
                                     <tr key={item.id}>
-                                        <td>{indexOfFirstItem + index + 1}</td>
+                                        <td>{index + 1}</td>
                                         <td>{item.nama}</td>
-                                        <td>
-                                            <button className="btn-edit" onClick={() => handleEdit(item)}>Edit</button>
-                                            <button className="btn-delete" onClick={() => handleDelete(item.id)}>Hapus</button>
-                                        </td>
+                                        <td>{item.latitude}</td>
+                                        <td>{item.longitude}</td>
+                                        <td><img src={`/images/${item.gambar}`} alt="Gambar" className="table-img" /></td>
+                                        <td><button onClick={() => handleEdit(item)}>Edit</button> <button onClick={() => handleDelete(item.id)}>Hapus</button></td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
-                        {/* Pagination */}
-                        {dataList.length > itemsPerPage && (
-                            <div className="pagination">
-                                {Array.from({ length: Math.ceil(dataList.length / itemsPerPage) }, (_, index) => (
-                                    <button key={index} onClick={() => paginate(index + 1)}>{index + 1}</button>
-                                ))}
-                            </div>
-                        )}
                     </div>
                 </div>
             </div>

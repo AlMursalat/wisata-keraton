@@ -11,7 +11,6 @@ body.dark-mode {
   top: 0;
   width: 100%;
   transition: top 0.4s ease-in-out, background 0.3s ease-in-out;
-  background: rgba(36, 36, 36, 0.9); /* Background semi-transparan */
   z-index: 1000;
 }
 
@@ -28,35 +27,73 @@ body.dark-mode {
   top: -80px; /* Geser navbar ke atas untuk sembunyi */
 }
 
+.navbar-brand {
+  font-size: 1.6rem;
+  font-weight: bold;
+  transition: color 0.3s ease-in-out, transform 0.2s;
+}
+
+/* 🔹 Mode Terang (Light Mode) */
+.navbar-light-mode .navbar-brand {
+  color: #2E7D32 !important; /* Hijau gelap */
+}
+
+.navbar-light-mode .navbar-brand:hover {
+  color: #1B5E20 !important; /* Hijau lebih gelap saat hover */
+  transform: scale(1.05);
+}
+
+/* 🔹 Mode Gelap (Dark Mode) */
+.navbar-dark-mode .navbar-brand {
+  color: #66FF99 !important; /* Hijau terang */
+}
+
+.navbar-dark-mode .navbar-brand:hover {
+  color: #00FF66 !important; /* Hijau lebih terang saat hover */
+  transform: scale(1.05);
+}
+
 .dark-mode .navbar {
   background: rgba(20, 20, 20, 0.9);
 }
 
 /* Warna navbar saat light mode */
 .navbar-light-mode {
-  background: rgba(255, 255, 255, 0.95);
+  background: #F5F5F5 !important;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-light-mode a.nav-link {
+  color: #333333 !important; /* Warna teks lebih gelap */
+  font-weight: bold;
+  transition: color 0.3s ease-in-out, transform 0.2s;
+}
+
+.navbar-light-mode a.nav-link:hover {
+  color: #2E7D32 !important; /* Hijau gelap saat hover */
+  transform: scale(1.05);
 }
 
 /* Warna navbar saat dark mode */
 .navbar-dark-mode {
-  background: rgba(20, 20, 20, 0.95);
+  background: #121212 !important; /* Warna lebih gelap agar kontras */
   border-bottom: 2px solid #333;
 }
 
-/* Hover efek untuk Navbar */
-.navbar-custom a.nav-link {
-  color: #E0E0E0 !important;
-  transition: color 0.3s ease-in-out;
+.navbar-dark-mode a.nav-link {
+  color: #FFFFFF !important; /* Warna putih terang */
+  font-weight: bold;
+  transition: color 0.3s ease-in-out, transform 0.2s;
 }
 
-.navbar-custom a.nav-link:hover {
-  color: #4CAF50 !important; /* Warna hijau lembut */
+.navbar-dark-mode a.nav-link:hover {
+  color: #66FF99 !important; /* Hijau terang saat hover */
+  transform: scale(1.05);
 }
 
 /* Animasi saat hover pada mode gelap */
 .dark-mode .navbar-custom a.nav-link:hover {
-  color: #81C784 !important;
+  color: #4CAF50 !important;
 }
 
 /* Efek transisi untuk tombol gelap/terang */
@@ -210,7 +247,7 @@ body.dark-mode {
   top: 0;
   height: 100vh;
   width: 250px;
-  background-color: #2c3e50;
+  background: linear-gradient(135deg, #2C3E50, #34495E);
   color: white;
   padding: 20px;
   display: flex;
@@ -223,6 +260,7 @@ body.dark-mode {
   font-size: 22px;
   font-weight: bold;
   margin-bottom: 20px;
+  color: #ecf0f1;
 }
 
 /* Menu Sidebar */
@@ -236,27 +274,29 @@ body.dark-mode {
   cursor: pointer;
   border-radius: 5px;
   text-align: center;
-  background: #34495e;
+  background: rgba(255, 255, 255, 0.1);
   margin-bottom: 10px;
   transition: 0.3s;
   font-weight: bold;
+  color: #ecf0f1;
 }
 
-/* Hover & Active Menu */
 .admin-sidebar ul li:hover {
-  background-color: #1a252f;
+  background: #4CAF50;
+  color: white;
 }
 
 .admin-sidebar ul li.active {
-  background-color: #4CAF50;
+  background-color: #27ae60;
   color: white;
 }
+
 
 /* Logout Button */
 .btn-logout {
   background-color: #e74c3c;
   color: white;
-  padding: 10px 15px;
+  padding: 12px;
   border-radius: 5px;
   cursor: pointer;
   text-align: center;
@@ -275,48 +315,64 @@ body.dark-mode {
 .admin-content {
   margin-left: 270px;
   padding: 20px;
-  width: calc(100% - 300px);
-  max-width: 1100px;
-  overflow-y: auto;
+  width: calc(100% - 270px); /* Gunakan seluruh layar kecuali sidebar */
+  max-width: none; /* Hilangkan batasan lebar */
+  overflow: hidden; /* Hilangkan scroll horizontal */
 }
 
 /* Gunakan Grid untuk menata Form & Tabel */
 .admin-grid {
   display: grid;
-  grid-template-columns: 1fr 2fr; /* Form 1 bagian, Tabel 2 bagian */
+  grid-template-columns: 1fr 3fr; /* Form 1 bagian, Tabel 3 bagian */
   gap: 20px;
   align-items: start;
+  width: 100%;
 }
 
 /* ============================
    FORM ADMIN (Sebelah Kiri)
 ============================ */
 .admin-form {
-  background-color: #f8f9fa;
+  background-color: white;
   padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 450px;
+}
+
+.admin-form h4 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 18px;
+  font-weight: bold;
 }
 
 .form-admin {
   display: flex;
   flex-direction: column;
   gap: 15px;
-  width: 100%;
 }
 
-/* Input dan Textarea */
+/* Label Input */
+.form-admin label {
+  font-weight: bold;
+  color: #444;
+  font-size: 14px;
+}
+
+/* Input & Textarea */
 .form-admin input,
 .form-admin textarea {
   width: 100%;
-  padding: 12px;
+  padding: 10px;
   border: 2px solid #ddd;
   border-radius: 6px;
   font-size: 14px;
   transition: all 0.3s ease-in-out;
 }
 
-/* Fokus pada Input */
 .form-admin input:focus,
 .form-admin textarea:focus {
   border-color: #4CAF50;
@@ -332,29 +388,38 @@ body.dark-mode {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  overflow-x: auto;
+  width: 100%;
 }
 
-/* Tabel dengan Border */
 .admin-table {
   width: 100%;
   border-collapse: collapse;
-  border-radius: 8px;
-  overflow: hidden;
 }
 
-/* Header */
 .admin-table thead {
-  background-color: #4CAF50;
+  background-color: #2ecc71;
   color: white;
 }
 
-/* Border & Padding */
 .admin-table th,
 .admin-table td {
-  padding: 12px 16px;
+  padding: 12px;
   text-align: center;
   border: 2px solid #ddd;
+}
+
+.admin-table img {
+  width: 50px;
+  height: 50px;
+  border-radius: 5px;
+}
+
+/* Gambar dalam tabel */
+.slider-img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 5px;
 }
 
 /* Efek Hover pada Tabel */
@@ -367,7 +432,7 @@ body.dark-mode {
 ============================ */
 /* Tombol Tambah */
 .btn-tambah {
-  background-color: #007bff;
+  background-color: #3498db;
   color: white;
   font-weight: bold;
   padding: 10px 15px;
@@ -377,7 +442,7 @@ body.dark-mode {
 }
 
 .btn-tambah:hover {
-  background-color: #0056b3;
+  background-color: #2980b9;
   transform: scale(1.05);
 }
 
@@ -436,9 +501,11 @@ body.dark-mode {
 .pagination button {
   background-color: #4CAF50;
   color: white;
-  padding: 10px 15px;
+  padding: 12px 18px;
   margin: 0 5px;
   border-radius: 5px;
+  border: none;
+  font-weight: bold;
   transition: background 0.3s, transform 0.2s;
 }
 
@@ -458,7 +525,7 @@ body.dark-mode {
 ============================ */
 @media (max-width: 1024px) {
   .admin-grid {
-    grid-template-columns: 1fr; /* Form & Tabel jadi satu kolom */
+    grid-template-columns: 1fr; /* Form & tabel menjadi satu kolom */
   }
 
   .admin-sidebar {
@@ -466,7 +533,8 @@ body.dark-mode {
   }
 
   .admin-content {
-    margin-left: 220px;
+    margin-left: 0;
+    width: 100%;
   }
 }
 
@@ -487,6 +555,11 @@ body.dark-mode {
 
   .admin-content {
     margin-left: 220px;
+  }
+
+  .admin-grid {
+    display: flex;
+    flex-direction: column;
   }
 }
 

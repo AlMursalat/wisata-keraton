@@ -3,9 +3,51 @@ import axios from "axios";
 // Base URL untuk semua API
 const BASE_URL = "http://localhost:5000/api";
 
-// ============================
-// WISATA API
-// ============================
+// 🔹 Ambil semua slider
+export const getSliders = async () => {
+    try {
+        const response = await axios.get(`${BASE_URL}/sliders`);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching sliders:", error);
+        return [];
+    }
+};
+
+// 🔹 Tambah slider baru
+export const tambahSlider = async (data) => {
+    try {
+        const response = await axios.post(`${BASE_URL}/sliders`, data);
+        return response.data;
+    } catch (error) {
+        console.error("Error menambahkan slider:", error);
+        throw error;
+    }
+};
+
+// 🔹 Update slider
+export const updateSlider = async (id, data) => {
+    try {
+        const response = await axios.put(`${BASE_URL}/sliders/${id}`, data);
+        return response.data;
+    } catch (error) {
+        console.error(`Error updating slider dengan id ${id}:`, error);
+        throw error;
+    }
+};
+
+// 🔹 Hapus slider
+export const deleteSlider = async (id) => {
+    try {
+        await axios.delete(`${BASE_URL}/sliders/${id}`);
+    } catch (error) {
+        console.error(`Error deleting slider dengan id ${id}:`, error);
+        throw error;
+    }
+};
+
+
+
 
 // 🔹 Ambil semua data wisata
 export const getWisata = async () => {

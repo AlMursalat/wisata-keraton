@@ -13,7 +13,7 @@ const LoginAdmin = () => {
 
         // Simulasi autentikasi (Bisa diubah dengan API backend)
         if (username === "admin" && password === "admin123") {
-            localStorage.setItem("adminToken", "true"); // Simpan status login
+            sessionStorage.setItem("adminToken", "true");
             navigate("/admin/dashboard"); // Redirect ke dashboard
         } else {
             setErrorMessage("Username atau password salah!");
