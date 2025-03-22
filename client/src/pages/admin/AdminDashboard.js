@@ -1,21 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../css/style.css";
-import { 
-    getWisata, tambahWisata, updateWisata, deleteWisata, 
-    getLawa, tambahLawa, updateLawa, deleteLawa, 
-    getBaluara, tambahBaluara, updateBaluara, deleteBaluara, 
-    getSliders, tambahSlider, updateSlider, deleteSlider 
+import {
+    getWisata, tambahWisata, updateWisata, deleteWisata,
+    getLawa, tambahLawa, updateLawa, deleteLawa,
+    getBaluara, tambahBaluara, updateBaluara, deleteBaluara,
+    getSliders, tambahSlider, updateSlider, deleteSlider
 } from "../../api";
 
 const AdminDashboard = () => {
     const navigate = useNavigate();
-    const [activeMenu, setActiveMenu] = useState("Manajemen Wisata");
+    const [activeMenu, setActiveMenu] = useState("Manajemen Beranda");  // Set default to "Manajemen Beranda"
     const [dataList, setDataList] = useState([]);
-    const [formData, setFormData] = useState({ id: null, nama: "", deskripsi_id: "", deskripsi_en: "", longitude: "", latitude: "", gambar: "" });
+    const [formData, setFormData] = useState({ id: null, nama: "", gambar: null });
     const [isEditMode, setIsEditMode] = useState(false);
     const [alertMessage, setAlertMessage] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
+    const [deskripsiBeranda, setDeskripsiBeranda] = useState("");
+    const [sliders, setSliders] = useState([]);  // State to hold sliders
     const itemsPerPage = 6;
 
     useEffect(() => {
@@ -23,18 +25,11 @@ const AdminDashboard = () => {
         if (!adminToken) {
             navigate("/admin/login");
         }
-    }, []);
+    }, [navigate]);
 
     useEffect(() => {
         fetchData();
     }, [activeMenu, currentPage]);
-
-    useEffect(() => {
-        if (alertMessage) {
-            const timer = setTimeout(() => setAlertMessage(null), 5000);
-            return () => clearTimeout(timer);
-        }
-    }, [alertMessage]);
 
     const fetchData = async () => {
         let data = [];
@@ -49,15 +44,27 @@ const AdminDashboard = () => {
                 case "Manajemen Baluara":
                     data = await getBaluara();
                     break;
-                case "Manajemen Slider":
-                    data = await getSliders();
+                case "Manajemen Beranda":
+                    const slidersData = await getSliders();  // Fetch sliders
+                    setSliders(slidersData);
+                    setDeskripsiBeranda("Tentang Benteng Keraton Buton...");
+                    return;
+                case "Monitoring Kunjungan":
+                    data = [
+                        { id: 1, nama: "Benteng Buton", kunjungan: 150 },
+                        { id: 2, nama: "Baluara", kunjungan: 80 }
+                    ];
                     break;
-                default:
-                    data = [];
+                case "Pengumuman":
+                    data = [
+                        { id: 1, teks: "Benteng Buton tutup sementara" },
+                        { id: 2, teks: "Event budaya diadakan minggu depan" }
+                    ];
+                    break;
             }
             setDataList(data);
         } catch (error) {
-            console.error("Gagal mengambil data:", error);
+            console.error(`Gagal mengambil data ${activeMenu}:`, error);
         }
     };
 
@@ -67,7 +74,11 @@ const AdminDashboard = () => {
     };
 
     const handleInputChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        if (e.target.name === "gambar") {
+            setFormData({ ...formData, gambar: e.target.files[0] });
+        } else {
+            setFormData({ ...formData, [e.target.name]: e.target.value });
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -75,54 +86,70 @@ const AdminDashboard = () => {
         try {
             if (isEditMode) {
                 await updateData();
-                setAlertMessage({ type: "success", text: "Data berhasil diperbarui!" });
             } else {
                 await addData();
-                setAlertMessage({ type: "success", text: "Data berhasil ditambahkan!" });
             }
             fetchData();
             resetForm();
         } catch (error) {
-            setAlertMessage({ type: "error", text: "Gagal menyimpan data!" });
+            console.error("Gagal menyimpan data:", error);
         }
     };
 
     const addData = async () => {
+        const formDataToSend = new FormData();
+        formDataToSend.append("nama", formData.nama);
+        formDataToSend.append("gambar", formData.gambar);
+
         switch (activeMenu) {
             case "Manajemen Wisata":
-                await tambahWisata(formData);
+                await tambahWisata(formDataToSend);
                 break;
             case "Manajemen Lawa":
-                await tambahLawa(formData);
+                await tambahLawa(formDataToSend);
                 break;
             case "Manajemen Baluara":
-                await tambahBaluara(formData);
+                await tambahBaluara(formDataToSend);
                 break;
-            case "Manajemen Slider":
-                await tambahSlider(formData);
+            case "Manajemen Beranda":  // Add sliders in Manajemen Beranda
+                if (formData.gambar) {
+                    await tambahSlider(formDataToSend);
+                }
+                break;
+            case "Pengumuman":
+                console.log("Pengumuman ditambahkan:", formData.nama);
                 break;
         }
     };
 
     const updateData = async () => {
+        const formDataToSend = new FormData();
+        formDataToSend.append("nama", formData.nama);
+        if (formData.gambar) {
+            formDataToSend.append("gambar", formData.gambar);
+        }
+
         switch (activeMenu) {
             case "Manajemen Wisata":
-                await updateWisata(formData.id, formData);
+                await updateWisata(formData.id, formDataToSend);
                 break;
             case "Manajemen Lawa":
-                await updateLawa(formData.id, formData);
+                await updateLawa(formData.id, formDataToSend);
                 break;
             case "Manajemen Baluara":
-                await updateBaluara(formData.id, formData);
+                await updateBaluara(formData.id, formDataToSend);
                 break;
-            case "Manajemen Slider":
-                await updateSlider(formData.id, formData);
+            case "Manajemen Beranda":
+                setDeskripsiBeranda(formData.nama);  // Update description
+                if (formData.gambar) {
+                    await updateSlider(formData.id, formDataToSend);  // Update slider
+                }
                 break;
         }
     };
 
     const handleEdit = (data) => {
-        setFormData(data);
+        setFormData({ id: data.id, nama: data.nama, gambar: null });
         setIsEditMode(true);
     };
 
@@ -139,86 +166,93 @@ const AdminDashboard = () => {
                 case "Manajemen Baluara":
                     await deleteBaluara(id);
                     break;
-                case "Manajemen Slider":
-                    await deleteSlider(id);
+                case "Manajemen Beranda":
+                    await deleteSlider(id);  // Delete slider
                     break;
             }
-            setAlertMessage({ type: "success", text: "Data berhasil dihapus!" });
             fetchData();
         } catch (error) {
-            setAlertMessage({ type: "error", text: "Gagal menghapus data!" });
+            console.error("Gagal menghapus data:", error);
         }
     };
 
     const resetForm = () => {
-        setFormData({ id: null, nama: "", deskripsi_id: "", deskripsi_en: "", longitude: "", latitude: "", gambar: "" });
+        setFormData({
+            id: null,
+            nama: "",
+            deskripsi_id: "",
+            deskripsi_en: "",
+            longitude: "",
+            latitude: "",
+            gambar: "",
+        });
         setIsEditMode(false);
     };
-
-    // Pagination
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = dataList.slice(indexOfFirstItem, indexOfLastItem);
-
-    const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     return (
         <div className="admin-layout">
             <div className="admin-sidebar">
                 <h2>DASHBOARD ADMIN</h2>
                 <ul>
-                    <li className={activeMenu === "Manajemen Wisata" ? "active" : ""} onClick={() => setActiveMenu("Manajemen Wisata")}>Manajemen Wisata</li>
-                    <li className={activeMenu === "Manajemen Lawa" ? "active" : ""} onClick={() => setActiveMenu("Manajemen Lawa")}>Manajemen Lawa</li>
-                    <li className={activeMenu === "Manajemen Baluara" ? "active" : ""} onClick={() => setActiveMenu("Manajemen Baluara")}>Manajemen Baluara</li>
-                    <li className={activeMenu === "Manajemen Slider" ? "active" : ""} onClick={() => setActiveMenu("Manajemen Slider")}>Manajemen Slider</li>
+                    <li onClick={() => setActiveMenu("Manajemen Wisata")}>Manajemen Wisata</li>
+                    <li onClick={() => setActiveMenu("Manajemen Lawa")}>Manajemen Lawa</li>
+                    <li onClick={() => setActiveMenu("Manajemen Baluara")}>Manajemen Baluara</li>
+                    <li onClick={() => setActiveMenu("Manajemen Beranda")}>Manajemen Beranda</li>  {/* Unified menu */}
+                    <li onClick={() => setActiveMenu("Monitoring Kunjungan")}>Monitoring Kunjungan</li>
+                    <li onClick={() => setActiveMenu("Pengumuman")}>Pengumuman</li>
                 </ul>
                 <button className="btn-logout" onClick={handleLogout}>Logout</button>
             </div>
 
             <div className="admin-content">
                 <h3>{activeMenu}</h3>
+                {activeMenu === "Manajemen Beranda" ? (
+                    <div>
+                        <textarea value={deskripsiBeranda} onChange={(e) => setDeskripsiBeranda(e.target.value)} />
+                        <button onClick={updateData}>Simpan Deskripsi</button>
 
-                <div className="admin-grid">
-                    <div className="admin-form">
-                        <h4>{isEditMode ? "Edit" : "Tambah"} {activeMenu}</h4>
-                        <form className="form-admin" onSubmit={handleSubmit}>
-                            <input type="text" name="nama" value={formData.nama} onChange={handleInputChange} required placeholder="Nama" />
-                            <textarea name="deskripsi_id" value={formData.deskripsi_id} onChange={handleInputChange} required placeholder="Deskripsi (ID)" />
-                            <textarea name="deskripsi_en" value={formData.deskripsi_en} onChange={handleInputChange} required placeholder="Deskripsi (EN)" />
-                            <input type="text" name="latitude" value={formData.latitude} onChange={handleInputChange} required placeholder="Latitude" />
-                            <input type="text" name="longitude" value={formData.longitude} onChange={handleInputChange} required placeholder="Longitude" />
-                            <input type="text" name="gambar" value={formData.gambar} onChange={handleInputChange} required placeholder="Nama File Gambar" />
-                            <button type="submit">{isEditMode ? "Update" : "Tambah"}</button>
+                        <h4>Manajemen Slider</h4>
+                        <form onSubmit={handleSubmit}>
+                            <input type="text" name="nama" placeholder="Nama Gambar" value={formData.nama} onChange={handleInputChange} />
+                            <input type="file" name="gambar" onChange={handleInputChange} />
+                            <button type="submit">{isEditMode ? "Update Slider" : "Tambah Slider"}</button>
                         </form>
-                    </div>
 
+                        <div className="slider-list">
+                            {sliders.map((slider) => (
+                                <div key={slider.id}>
+                                    <img src={slider.gambar} alt={slider.nama} className="slider-img" />
+                                    <button onClick={() => handleEdit(slider)}>Edit</button>
+                                    <button onClick={() => handleDelete(slider.id)}>Hapus</button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                ) : (
+                    
                     <div className="admin-table-container">
                         <table className="admin-table">
                             <thead>
                                 <tr>
                                     <th>No</th>
                                     <th>Nama</th>
-                                    <th>Latitude</th>
-                                    <th>Longitude</th>
                                     <th>Gambar</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {currentItems.map((item, index) => (
+                                {dataList.map((item, index) => (
                                     <tr key={item.id}>
                                         <td>{index + 1}</td>
                                         <td>{item.nama}</td>
-                                        <td>{item.latitude}</td>
-                                        <td>{item.longitude}</td>
-                                        <td><img src={`/images/${item.gambar}`} alt="Gambar" className="table-img" /></td>
+                                        <td><img src={item.gambar} alt={item.nama} className="table-img" /></td>
                                         <td><button onClick={() => handleEdit(item)}>Edit</button> <button onClick={() => handleDelete(item.id)}>Hapus</button></td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
                     </div>
-                </div>
+                )}
             </div>
         </div>
     );

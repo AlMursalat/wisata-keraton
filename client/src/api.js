@@ -1,55 +1,10 @@
 import axios from "axios";
-
 // Base URL untuk semua API
 const BASE_URL = "http://localhost:5000/api";
 
-// 🔹 Ambil semua slider
-export const getSliders = async () => {
-    try {
-        const response = await axios.get(`${BASE_URL}/sliders`);
-        return response.data;
-    } catch (error) {
-        console.error("Error fetching sliders:", error);
-        return [];
-    }
-};
-
-// 🔹 Tambah slider baru
-export const tambahSlider = async (data) => {
-    try {
-        const response = await axios.post(`${BASE_URL}/sliders`, data);
-        return response.data;
-    } catch (error) {
-        console.error("Error menambahkan slider:", error);
-        throw error;
-    }
-};
-
-// 🔹 Update slider
-export const updateSlider = async (id, data) => {
-    try {
-        const response = await axios.put(`${BASE_URL}/sliders/${id}`, data);
-        return response.data;
-    } catch (error) {
-        console.error(`Error updating slider dengan id ${id}:`, error);
-        throw error;
-    }
-};
-
-// 🔹 Hapus slider
-export const deleteSlider = async (id) => {
-    try {
-        await axios.delete(`${BASE_URL}/sliders/${id}`);
-    } catch (error) {
-        console.error(`Error deleting slider dengan id ${id}:`, error);
-        throw error;
-    }
-};
-
-
-
-
-// 🔹 Ambil semua data wisata
+/* ==============================
+   🔹 FUNGSI CRUD UNTUK WISATA
+   ============================== */
 export const getWisata = async () => {
     try {
         const response = await axios.get(`${BASE_URL}/wisata`);
@@ -60,7 +15,6 @@ export const getWisata = async () => {
     }
 };
 
-// 🔹 Ambil data wisata berdasarkan ID
 export const getWisataById = async (id) => {
     try {
         const response = await axios.get(`${BASE_URL}/wisata/${id}`);
@@ -71,18 +25,18 @@ export const getWisataById = async (id) => {
     }
 };
 
-// 🔹 Tambah Wisata
+// 🔹 Tambah Wisata (Dikembalikan!)
 export const tambahWisata = async (data) => {
     try {
         const response = await axios.post(`${BASE_URL}/wisata`, data);
         return response.data;
     } catch (error) {
-        console.error("Gagal menambahkan wisata:", error.response?.data || error.message);
+        console.error("Error menambahkan wisata:", error.response?.data || error.message);
         throw error;
     }
 };
 
-// 🔹 Update data wisata
+// 🔹 Update Wisata (Dikembalikan!)
 export const updateWisata = async (id, data) => {
     try {
         const response = await axios.put(`${BASE_URL}/wisata/${id}`, data);
@@ -93,18 +47,19 @@ export const updateWisata = async (id, data) => {
     }
 };
 
-// 🔹 Hapus Wisata
+// 🔹 Hapus Wisata (Dikembalikan!)
 export const deleteWisata = async (id) => {
     try {
-        const response = await axios.delete(`${BASE_URL}/wisata/${id}`);
-        return response.data;
+        await axios.delete(`${BASE_URL}/wisata/${id}`);
     } catch (error) {
-        console.error(`Error deleting wisata dengan id ${id}:`, error);
+        console.error("Error deleting wisata:", error);
         throw error;
     }
 };
 
-// 🔹 Ambil semua data lawa
+/* ==============================
+   🔹 FUNGSI CRUD UNTUK LAWA
+   ============================== */
 export const getLawa = async () => {
     try {
         const response = await axios.get(`${BASE_URL}/lawa`);
@@ -115,7 +70,6 @@ export const getLawa = async () => {
     }
 };
 
-// 🔹 Ambil data lawa berdasarkan ID
 export const getLawaById = async (id) => {
     try {
         const response = await axios.get(`${BASE_URL}/lawa/${id}`);
@@ -126,10 +80,9 @@ export const getLawaById = async (id) => {
     }
 };
 
-// 🔹 Tambah Lawa
-export const tambahLawa = async (lawaData) => {
+export const tambahLawa = async (data) => {
     try {
-        const response = await axios.post(`${BASE_URL}/lawa`, lawaData);
+        const response = await axios.post(`${BASE_URL}/lawa`, data);
         return response.data;
     } catch (error) {
         console.error("Error menambahkan Lawa:", error.response?.data || error.message);
@@ -137,7 +90,6 @@ export const tambahLawa = async (lawaData) => {
     }
 };
 
-// 🔹 Update Lawa
 export const updateLawa = async (id, data) => {
     try {
         const response = await axios.put(`${BASE_URL}/lawa/${id}`, data);
@@ -148,7 +100,6 @@ export const updateLawa = async (id, data) => {
     }
 };
 
-// 🔹 Hapus Lawa
 export const deleteLawa = async (id) => {
     try {
         await axios.delete(`${BASE_URL}/lawa/${id}`);
@@ -158,10 +109,12 @@ export const deleteLawa = async (id) => {
     }
 };
 
-// Ambil semua baluara
+/* ==============================
+   🔹 FUNGSI CRUD UNTUK BALUARA
+   ============================== */
 export const getBaluara = async () => {
     try {
-        const response = await axios.get("http://localhost:5000/api/baluara");
+        const response = await axios.get(`${BASE_URL}/baluara`);
         return response.data;
     } catch (error) {
         console.error("Error fetching baluara:", error);
@@ -169,21 +122,19 @@ export const getBaluara = async () => {
     }
 };
 
-// Ambil baluara berdasarkan ID
 export const getBaluaraById = async (id) => {
     try {
-        const response = await axios.get(`http://localhost:5000/api/baluara/${id}`);
+        const response = await axios.get(`${BASE_URL}/baluara/${id}`);
         return response.data;
     } catch (error) {
-        console.error(`Error fetching baluara with id ${id}:`, error);
+        console.error(`Error fetching baluara dengan id ${id}:`, error);
         return null;
     }
 };
 
-// Tambah baluara
 export const tambahBaluara = async (data) => {
     try {
-        const response = await axios.post("http://localhost:5000/api/baluara", data);
+        const response = await axios.post(`${BASE_URL}/baluara`, data);
         return response.data;
     } catch (error) {
         console.error("Error adding baluara:", error);
@@ -191,23 +142,90 @@ export const tambahBaluara = async (data) => {
     }
 };
 
-// Update baluara
 export const updateBaluara = async (id, data) => {
     try {
-        const response = await axios.put(`http://localhost:5000/api/baluara/${id}`, data);
+        const response = await axios.put(`${BASE_URL}/baluara/${id}`, data);
         return response.data;
     } catch (error) {
-        console.error(`Error updating baluara with id ${id}:`, error);
+        console.error(`Error updating baluara dengan id ${id}:`, error);
         throw error;
     }
 };
 
-// Hapus baluara
 export const deleteBaluara = async (id) => {
     try {
-        await axios.delete(`http://localhost:5000/api/baluara/${id}`);
+        await axios.delete(`${BASE_URL}/baluara/${id}`);
     } catch (error) {
-        console.error(`Error deleting baluara with id ${id}:`, error);
+        console.error(`Error deleting baluara dengan id ${id}:`, error);
+        throw error;
+    }
+};
+
+/* ==============================
+   🔹 FUNGSI CRUD UNTUK SLIDER
+   ============================== */
+
+// 🔹 Ambil semua slider
+export const getSliders = async () => {
+    try {
+        const response = await axios.get("http://localhost:5000/api/sliders");
+        return response.data.map(slider => ({
+            id: slider.id,
+            nama: slider.nama,
+            gambar: slider.gambar ? `http://localhost:5000/uploads/${slider.gambar}` : ""
+        }));
+    } catch (error) {
+        console.error("Error fetching sliders:", error);
+        return [];
+    }
+};
+
+
+// 🔹 Tambah Slider
+export const tambahSlider = async (data) => {
+    try {
+        const formData = new FormData();
+        formData.append("nama", data.nama);
+        formData.append("gambar", data.gambar); // Pastikan gambar dikirim
+
+        const response = await axios.post(`${BASE_URL}/sliders`, formData, {
+            headers: { "Content-Type": "multipart/form-data" }
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error("Error menambahkan slider:", error);
+        throw error;
+    }
+};
+
+// 🔹 Update Slider
+export const updateSlider = async (id, data) => {
+    try {
+        const formData = new FormData();
+        formData.append("nama", data.nama);
+        if (data.gambar) {
+            formData.append("gambar", data.gambar);
+        }
+
+        const response = await axios.put(`${BASE_URL}/sliders/${id}`, formData, {
+            headers: { "Content-Type": "multipart/form-data" }
+        });
+
+        return response.data;
+    } catch (error) {
+        console.error("Error mengupdate slider:", error);
+        throw error;
+    }
+};
+
+// 🔹 Hapus Slider
+export const deleteSlider = async (id) => {
+    try {
+        const response = await axios.delete(`${BASE_URL}/sliders/${id}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error menghapus slider:", error);
         throw error;
     }
 };
